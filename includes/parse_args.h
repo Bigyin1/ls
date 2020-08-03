@@ -15,7 +15,7 @@ typedef struct s_args
     // opts
     bool is_long;
     bool recursive;
-    bool all;
+    bool print_all;
     bool reverse;
     bool sort_by_time;
 

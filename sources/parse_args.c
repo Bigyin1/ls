@@ -19,7 +19,7 @@ static int parse_dash_arg(t_args *ls_a, char* argv)
     for (;*argv;argv++) {
         if (*argv == 'l') {ls_a->is_long = true; continue;}
         if (*argv == 'R') {ls_a->recursive = true;continue;}
-        if (*argv == 'a') {ls_a->all = true;continue;}
+        if (*argv == 'a') {ls_a->print_all = true;continue;}
         if (*argv == 'r') {ls_a->reverse = true;continue;}
         if (*argv == 't') {ls_a->sort_by_time = true;continue;}
         fprintf(stderr,

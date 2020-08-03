@@ -14,6 +14,6 @@ typedef struct s_array
 } t_array;
 
 t_array append(t_array arr, void* d);
-
+void print(t_array arr);
 
 #endif //LS_ARRAY_H

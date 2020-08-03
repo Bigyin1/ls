@@ -32,12 +32,12 @@ static int by_time_r( const void * val1, const void * val2 )
 
 static int by_name(const void * val1, const void * val2 )
 {
-    return strcmp(*(const char**)val1, *(const char**)val2);
+    return strcasecmp(*(const char**)val1, *(const char**)val2);
 }
 
 static int by_name_r( const void * val1, const void * val2 )
 {
-    return strcmp(*(const char**)val2, *(const char**)val1);
+    return strcasecmp(*(const char**)val2, *(const char**)val1);
 }
 
 void sort_args(t_args* args)
@@ -78,4 +78,9 @@ void remove_last_path_elem(t_args *args)
         if (i == 0) break;
         --i;
     }
+}
+
+bool is_hidden(char* file)
+{
+    return (strncmp(file, ".", 1) == 0 || strncmp(file, "..", 2) == 0);
 }

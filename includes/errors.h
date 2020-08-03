@@ -16,6 +16,4 @@ typedef struct s_error
 } t_error;
 
 
-
-
 #endif //LS_ERRORS_H

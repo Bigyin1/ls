@@ -4,6 +4,7 @@
 
 #include "array.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 t_array append(t_array arr, void* d)
 {
@@ -22,4 +23,11 @@ t_array append(t_array arr, void* d)
     }
     arr.data[arr.len++] = d;
     return arr;
+}
+
+void print(t_array arr)
+{
+    for (int i = 0; i < arr.len; ++i) {
+        printf("%s\n", arr.data[i]);
+    }
 }
