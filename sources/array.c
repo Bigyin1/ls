@@ -13,10 +13,12 @@ t_array append(t_array arr, void* d)
     }
     if (arr.cap == arr.len) {
         arr.cap *= 2;
-        arr.data = realloc(arr.data, arr.cap*sizeof(void*));
-        if (arr.data == NULL) {
+        void* n = realloc(arr.data, arr.cap*sizeof(void*));
+        if (n == NULL) {
+            free(arr.data);
             exit(2);
         }
+        arr.data = n;
     }
     arr.data[arr.len++] = d;
     return arr;

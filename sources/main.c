@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "errors.h"
 #include "parse_args.h"
+#include "list.h"
+#include "utils.h"
 
 int main(int argc, char** argv) {
     t_args args = {0};
@@ -10,9 +12,7 @@ int main(int argc, char** argv) {
         return ec;
     }
 
-
-//    for (;*args.files;args.files++) {
-//        printf("%s\n", *args.files);
-//    }
-    return 0;
+    sort_args(&args);
+    list(&args);
+    return args.exitCode;
 }

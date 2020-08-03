@@ -4,7 +4,7 @@ project(ls C)
 set(CMAKE_C_STANDARD 11)
 
 
-add_executable(ls sources/main.c sources/parse_args.c sources/list.c sources/array.c sources/sort_files.c)
+add_executable(ls sources/main.c sources/parse_args.c sources/list.c sources/array.c sources/utils.c)
 include_directories(includes)
 target_compile_options(ls PRIVATE -fsanitize=address)
 target_link_libraries(ls asan)

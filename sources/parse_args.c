@@ -6,10 +6,11 @@
 
 
 static int parse_file_arg(t_args *ls_a, char* argv) {
-    char** f = ls_a->files;
 
-    for (; *f;f++);
-    *f = argv;
+    ls_a->files = append(ls_a->files, argv);
+    if (ls_a->files.data == NULL) {
+        return ERR_FATAL;
+    }
     return NO_ERR;
 }
 
@@ -42,6 +43,7 @@ static int parse_ddash_arg(t_args *ls_a, const char* argv) {
 }
 
 
+
 static int parse_arg(t_args *ls_a, char* argv)
 {
     if (argv[0] == '-') {
@@ -57,14 +59,14 @@ int parse_args(t_args *ls_a, int argc, char** argv)
 {
     int err;
 
-    if (!(ls_a->files = calloc(argc+1, sizeof(char*)))) {
-        perror("ls:");
-        return ERR_FATAL;
-    }
     for (;*argv;argv++) {
         if ((err = parse_arg(ls_a, *argv) != 0)) {
             return err;
         }
+    }
+    if (ls_a->files.len == 0) {
+        ls_a->files = append(ls_a->files, ".");
+
     }
     return NO_ERR;
 }
