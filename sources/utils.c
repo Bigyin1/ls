@@ -3,40 +3,44 @@
 //
 
 #include "utils.h"
+#include "file.h"
+#include <string.h>
+#include <stdlib.h>
 
 static int by_time( const void * val1, const void * val2)
 {
-    struct stat st1;
-    struct stat st2;
+    t_file* f1 = *(t_file** )val1;
+    t_file* f2 = *(t_file** )val2;
 
-    lstat(*(const char**)val1, &st1);
-    lstat(*(const char**)val2, &st2);
-
-    return (int)(st1.st_mtim.tv_nsec - st2.st_mtim.tv_nsec);
+    return (int)(f1->st.st_mtim.tv_nsec - f2->st.st_mtim.tv_nsec);
 }
 
 static int by_time_r( const void * val1, const void * val2 )
 {
-    struct stat st1;
-    struct stat st2;
+    t_file* f1 = *(t_file** )val1;
+    t_file* f2 = *(t_file** )val2;
 
-    lstat(*(const char**)val1, &st1);
-    lstat(*(const char**)val2, &st2);
 
-    return (int)(st1.st_mtim.tv_nsec - st2.st_mtim.tv_nsec);
+    return (int)(f2->st.st_mtim.tv_nsec - f1->st.st_mtim.tv_nsec);
 }
 
 static int by_name(const void * val1, const void * val2 )
 {
-    return strcasecmp(*(const char**)val1, *(const char**)val2);
+    t_file* f1 = *(t_file** )val1;
+    t_file* f2 = *(t_file** )val2;
+
+    return strcasecmp(f1->name, f2->name);
 }
 
 static int by_name_r( const void * val1, const void * val2 )
 {
-    return strcasecmp(*(const char**)val2, *(const char**)val1);
+    t_file* f1 = *(t_file** )val1;
+    t_file* f2 = *(t_file** )val2;
+
+    return strcasecmp(f2->name, f1->name);
 }
 
-void sort_args(t_args* args)
+void sort_files(t_ls* args)
 {
     if (args->sort_by_time) {
         args->reverse ? qsort(args->files.data, args->files.len, sizeof(void*), by_time_r) :
@@ -50,7 +54,7 @@ void sort_args(t_args* args)
     qsort(args->files.data, args->files.len, sizeof(void*), by_name);
 }
 
-void add_path_elem(t_args *args, char* file)
+void add_path_elem(t_ls *args, char* file)
 {
     unsigned long p_len;
 
@@ -62,7 +66,7 @@ void add_path_elem(t_args *args, char* file)
     strcat(args->curr_path, file);
 }
 
-void remove_last_path_elem(t_args *args)
+void remove_last_path_elem(t_ls *args)
 {
     unsigned long p_len;
 
@@ -70,48 +74,20 @@ void remove_last_path_elem(t_args *args)
     if (p_len == 0) return;
     if (args->curr_path[p_len-1] == '/') args->curr_path[p_len-1] = 0;
     for (ulong i = p_len-1; i >= 0;) {
-        if (args->curr_path[i] == '/') break;
+        if (args->curr_path[i] == '/') {
+            args->curr_path[i] = 0;
+            if (i == 1 && args->curr_path[0] == '.') args->curr_path[0] = 0;
+            break;
+        }
         args->curr_path[i] = 0;
         if (i == 0) break;
         --i;
     }
-    p_len = strlen(args->curr_path);
 }
 
-bool is_hidden(char* file)
-{
-    return (strncmp(file, ".", 1) == 0 || strncmp(file, "..", 2) == 0);
-}
 
-void set_exit_code(t_args *args, int ecode)
+void set_exit_code(t_ls *args, int ecode)
 {
     if (ecode <= args->exitCode) return;
     args->exitCode = ecode;
-}
-
-t_array filter_files(t_args *args, bool ret_files){
-    t_array f_arr = {0};
-    t_array d_arr = {0};
-    struct stat st;
-
-    for (int i = 0; i < args->files.len; ++i) {
-        add_path_elem(args, args->files.data[i]);
-        if (lstat(args->curr_path, &st) == -1) {
-            fprintf(stderr,"ls: can't access '%s': ", args->curr_path);
-            perror("");
-            set_exit_code(args, ERR_MINOR);
-            if (args->root_args) set_exit_code(args, ERR_FATAL);
-            remove_last_path_elem(args);
-            continue;
-        }
-        if (S_ISDIR(st.st_mode)) {
-            d_arr = append(d_arr, strdup(args->files.data[i]));
-        } else if (ret_files) {
-            f_arr = append(f_arr, strdup(args->files.data[i]));
-        }
-        remove_last_path_elem(args);
-    }
-    free_arr(args->files, true);
-    args->files = d_arr;
-    return f_arr;
 }

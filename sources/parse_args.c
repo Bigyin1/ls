@@ -1,17 +1,18 @@
 #include "parse_args.h"
+#include "file.h"
+#include "errors.h"
+#include <stdio.h>
+#include <string.h>
 
-
-static int parse_file_arg(t_args *ls_a, char* argv)
+static int parse_file_arg(t_ls *ls_a, char* argv)
 {
-
-    ls_a->files = append(ls_a->files, strdup(argv));
-    if (ls_a->files.data == NULL) {
-        return ERR_FATAL;
-    }
+    t_file *f = new_file(ls_a, argv, true);
+    if (f == NULL) return 0;
+    ls_a->files = append(ls_a->files, f);
     return NO_ERR;
 }
 
-static int parse_dash_arg(t_args *ls_a, char* argv)
+static int parse_dash_arg(t_ls *ls_a, char* argv)
 {
     for (;*argv;argv++) {
         if (*argv == 'l') {ls_a->is_long = true; continue;}
@@ -27,7 +28,7 @@ static int parse_dash_arg(t_args *ls_a, char* argv)
     return NO_ERR;
 }
 
-static int parse_ddash_arg(t_args *ls_a, const char* argv)
+static int parse_ddash_arg(t_ls *ls_a, const char* argv)
 {
 
     if (!*argv) return true;
@@ -40,9 +41,7 @@ static int parse_ddash_arg(t_args *ls_a, const char* argv)
     return ERR_FATAL;
 }
 
-
-
-static int parse_arg(t_args *ls_a, char* argv)
+static int parse_arg(t_ls *ls_a, char* argv)
 {
     if (argv[0] == '-') {
         return parse_dash_arg(ls_a, argv+1);
@@ -53,7 +52,7 @@ static int parse_arg(t_args *ls_a, char* argv)
     return parse_file_arg(ls_a, argv);
 }
 
-int parse_args(t_args *ls_a, int argc, char** argv)
+int parse_args(t_ls *ls_a, int argc, char** argv)
 {
     int err;
 
@@ -63,7 +62,9 @@ int parse_args(t_args *ls_a, int argc, char** argv)
         }
     }
     if (ls_a->files.len == 0) {
-        ls_a->files = append(ls_a->files, strdup("."));
+        t_file *f = new_file(ls_a, ".", true);
+        if (f == NULL) return ERR_FATAL;
+        ls_a->files = append(ls_a->files, f);
 
     }
     return NO_ERR;

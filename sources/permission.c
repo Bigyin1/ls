@@ -3,9 +3,10 @@
 //
 
 #include "permission.h"
+#include <stdlib.h>
 
 
-char get_file_type(mode_t st_mode)
+char get_file_type_char(mode_t st_mode)
 {
     if ((st_mode & S_IFMT) == S_IFBLK)
         return ('b');
@@ -31,7 +32,7 @@ char *get_file_permissions(mode_t st_mode, char *filename)
 
     if (!(permissions = calloc(10, 1)))
         return NULL;
-    permissions[0] = get_file_type(st_mode);
+    permissions[0] = get_file_type_char(st_mode);
     permissions[1] = st_mode & S_IRUSR ? 'r' : '-';
     permissions[2] = st_mode & S_IWUSR ? 'w' : '-';
     permissions[3] = st_mode & S_IXUSR ? 'x' : '-';

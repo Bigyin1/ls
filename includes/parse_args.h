@@ -1,12 +1,9 @@
 #ifndef LS_LS_H
 #define LS_LS_H
 
+#include "array.h"
 #include <stdbool.h>
 #include <limits.h>
-#include "array.h"
-#include "errors.h"
-#include <string.h>
-#include <stdio.h>
 
 typedef struct s_args
 {
@@ -26,11 +23,9 @@ typedef struct s_args
     bool sort_by_time;
 
     int exitCode;
-}   t_args;
+}   t_ls;
 
-int parse_args(t_args *ls_a, int args, char** argv);
-
-
+int parse_args(t_ls *ls_a, int args, char** argv);
 
 
 #endif //LS_LS_H

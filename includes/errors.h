@@ -9,11 +9,5 @@
 #define ERR_MINOR 1
 #define ERR_FATAL 2
 
-typedef struct s_error
-{
-    int err_code;
-    char* err_verbose;
-} t_error;
-
 
 #endif //LS_ERRORS_H

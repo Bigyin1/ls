@@ -5,15 +5,12 @@
 #ifndef LS_UTILS_H
 #define LS_UTILS_H
 
-#include "list.h"
-#include "parse_args.h"
-#include <sys/acl.h>
+#include <stdbool.h>
+#include <parse_args.h>
 
-void sort_args(t_args*);
-void add_path_elem(t_args *args, char* file);
-void remove_last_path_elem(t_args *args);
-bool is_hidden(char* file);
-t_array filter_files(t_args *args, bool ret_files);
-void set_exit_code(t_args *args, int ecode);
+void sort_files(t_ls *args);
+void add_path_elem(t_ls *args, char* file);
+void remove_last_path_elem(t_ls *args);
+void set_exit_code(t_ls *args, int ecode);
 
 #endif //LS_UTILS_H

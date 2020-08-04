@@ -4,11 +4,13 @@
 
 #include "array.h"
 #include <stdlib.h>
+#include "errors.h"
+#include "file.h"
 
 t_array append(t_array arr, void* d)
 {
     if (arr.cap == 0) {
-        arr.cap = 128;
+        arr.cap = 64;
         arr.data = malloc(arr.cap*sizeof(void*));
     }
     if (arr.cap == arr.len) {
@@ -24,22 +26,13 @@ t_array append(t_array arr, void* d)
     return arr;
 }
 
-t_array new_arr(int len, int cap)
-{
-    t_array arr = {.len = len, .cap = cap};
 
-    arr.data = (void**)calloc(cap, sizeof(void*));
-    if (arr.data == NULL) exit(ERR_FATAL);
-    return arr;
-}
-
-void free_arr(t_array arr, bool free_cont)
+void free_file_arr(t_array arr)
 {
-    if (free_cont) {
-        for (int i = 0; i < arr.len; ++i) {
-            free(arr.data[i]);
-        }
+    for (int i = 0; i < arr.len; ++i) {
+        t_file * f = (t_file*)arr.data[i];
+        free(f->name);
+        free(f);
     }
     free(arr.data);
-
 }

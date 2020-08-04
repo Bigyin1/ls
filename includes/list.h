@@ -5,19 +5,8 @@
 #ifndef LS_LIST_H
 #define LS_LIST_H
 
-
+#include "list.h"
 #include "parse_args.h"
-#include "errors.h"
-#include "array.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <string.h>
-#include "utils.h"
 
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
@@ -28,8 +17,8 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
-t_array print_dir_content(t_args *args, bool filter_dirs);
-void process_dirs(t_args *args);
+void process_dirs(t_ls *args);
+void print_access_err(t_ls *args);
 
 
 #endif //LS_LIST_H
