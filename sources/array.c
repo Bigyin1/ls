@@ -4,7 +4,6 @@
 
 #include "array.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 t_array append(t_array arr, void* d)
 {
@@ -17,7 +16,7 @@ t_array append(t_array arr, void* d)
         void* n = realloc(arr.data, arr.cap*sizeof(void*));
         if (n == NULL) {
             free(arr.data);
-            exit(2);
+            exit(ERR_FATAL);
         }
         arr.data = n;
     }
@@ -25,9 +24,11 @@ t_array append(t_array arr, void* d)
     return arr;
 }
 
-void print(t_array arr)
+t_array new_arr(int len, int cap)
 {
-    for (int i = 0; i < arr.len; ++i) {
-        printf("%s\n", arr.data[i]);
-    }
+    t_array arr = {.len = len, .cap = cap};
+
+    arr.data = (void**)calloc(cap, sizeof(void*));
+    if (arr.data == NULL) exit(ERR_FATAL);
+    return arr;
 }

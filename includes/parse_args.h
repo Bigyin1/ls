@@ -4,11 +4,17 @@
 #include <stdbool.h>
 #include <limits.h>
 #include "array.h"
+#include "errors.h"
+#include <string.h>
+#include <stdio.h>
 
 typedef struct s_args
 {
     // file list
     t_array files;
+
+    bool prev_files;
+    bool root_args;
 
     char curr_path[PATH_MAX];
 

@@ -3,10 +3,6 @@
 //
 
 #include "utils.h"
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <string.h>
 
 static int by_time( const void * val1, const void * val2)
 {
@@ -83,4 +79,37 @@ void remove_last_path_elem(t_args *args)
 bool is_hidden(char* file)
 {
     return (strncmp(file, ".", 1) == 0 || strncmp(file, "..", 2) == 0);
+}
+
+void set_exit_code(t_args *args, int ecode)
+{
+    if (ecode <= args->exitCode) return;
+    args->exitCode = ecode;
+}
+
+t_array filter_files(t_args *args){
+    t_array f_arr = {0};
+    t_array d_arr = {0};
+    struct stat st;
+
+    for (int i = 0; i < args->files.len; ++i) {
+        add_path_elem(args, args->files.data[i]);
+        if (lstat(args->curr_path, &st) == -1) {
+            fprintf(stderr,"ls: can't access '%s': ", args->curr_path);
+            perror("");
+            set_exit_code(args, ERR_MINOR);
+            if (args->root_args) set_exit_code(args, ERR_FATAL);
+            remove_last_path_elem(args);
+            continue;
+        }
+        if (S_ISDIR(st.st_mode)) {
+            d_arr = append(d_arr, args->files.data[i]);
+        } else {
+            f_arr = append(f_arr, args->files.data[i]);
+        }
+        remove_last_path_elem(args);
+    }
+    free(args->files.data);
+    args->files = d_arr;
+    return f_arr;
 }

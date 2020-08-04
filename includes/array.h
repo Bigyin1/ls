@@ -6,6 +6,7 @@
 #define LS_ARRAY_H
 
 #include <stddef.h>
+#include "errors.h"
 
 typedef struct s_array
 {
@@ -14,6 +15,6 @@ typedef struct s_array
 } t_array;
 
 t_array append(t_array arr, void* d);
-void print(t_array arr);
+t_array new_arr(int len, int cap);
 
 #endif //LS_ARRAY_H

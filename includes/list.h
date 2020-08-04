@@ -7,6 +7,17 @@
 
 
 #include "parse_args.h"
+#include "errors.h"
+#include "array.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <string.h>
+#include "utils.h"
 
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
@@ -17,7 +28,8 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
-void list(t_args *args);
+void print_dir_content(t_args *args);
+void process_dirs(t_args *args);
 
 
 #endif //LS_LIST_H

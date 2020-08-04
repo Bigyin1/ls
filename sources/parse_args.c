@@ -1,11 +1,8 @@
 #include "parse_args.h"
-#include "errors.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 
-static int parse_file_arg(t_args *ls_a, char* argv) {
+static int parse_file_arg(t_args *ls_a, char* argv)
+{
 
     ls_a->files = append(ls_a->files, argv);
     if (ls_a->files.data == NULL) {
@@ -30,7 +27,8 @@ static int parse_dash_arg(t_args *ls_a, char* argv)
     return NO_ERR;
 }
 
-static int parse_ddash_arg(t_args *ls_a, const char* argv) {
+static int parse_ddash_arg(t_args *ls_a, const char* argv)
+{
 
     if (!*argv) return true;
     if (!strcmp(argv, "all")) {ls_a->is_long = true; return 0;}
