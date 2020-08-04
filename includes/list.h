@@ -28,7 +28,7 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
-void print_dir_content(t_args *args);
+t_array print_dir_content(t_args *args, bool filter_dirs);
 void process_dirs(t_args *args);
 
 

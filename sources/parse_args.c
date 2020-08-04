@@ -4,7 +4,7 @@
 static int parse_file_arg(t_args *ls_a, char* argv)
 {
 
-    ls_a->files = append(ls_a->files, argv);
+    ls_a->files = append(ls_a->files, strdup(argv));
     if (ls_a->files.data == NULL) {
         return ERR_FATAL;
     }
@@ -63,7 +63,7 @@ int parse_args(t_args *ls_a, int argc, char** argv)
         }
     }
     if (ls_a->files.len == 0) {
-        ls_a->files = append(ls_a->files, ".");
+        ls_a->files = append(ls_a->files, strdup("."));
 
     }
     return NO_ERR;

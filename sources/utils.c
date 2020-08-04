@@ -55,6 +55,7 @@ void add_path_elem(t_args *args, char* file)
     unsigned long p_len;
 
     p_len = strlen(args->curr_path);
+
     if (p_len != 0 && args->curr_path[p_len-1] != '/') {
         strcat(args->curr_path, "/");
     }
@@ -74,6 +75,7 @@ void remove_last_path_elem(t_args *args)
         if (i == 0) break;
         --i;
     }
+    p_len = strlen(args->curr_path);
 }
 
 bool is_hidden(char* file)
@@ -87,7 +89,7 @@ void set_exit_code(t_args *args, int ecode)
     args->exitCode = ecode;
 }
 
-t_array filter_files(t_args *args){
+t_array filter_files(t_args *args, bool ret_files){
     t_array f_arr = {0};
     t_array d_arr = {0};
     struct stat st;
@@ -103,13 +105,13 @@ t_array filter_files(t_args *args){
             continue;
         }
         if (S_ISDIR(st.st_mode)) {
-            d_arr = append(d_arr, args->files.data[i]);
-        } else {
-            f_arr = append(f_arr, args->files.data[i]);
+            d_arr = append(d_arr, strdup(args->files.data[i]));
+        } else if (ret_files) {
+            f_arr = append(f_arr, strdup(args->files.data[i]));
         }
         remove_last_path_elem(args);
     }
-    free(args->files.data);
+    free_arr(args->files, true);
     args->files = d_arr;
     return f_arr;
 }

@@ -5,8 +5,9 @@
 #ifndef LS_ARRAY_H
 #define LS_ARRAY_H
 
-#include <stddef.h>
 #include "errors.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 typedef struct s_array
 {
@@ -16,5 +17,6 @@ typedef struct s_array
 
 t_array append(t_array arr, void* d);
 t_array new_arr(int len, int cap);
+void free_arr(t_array arr, bool free_cont);
 
 #endif //LS_ARRAY_H

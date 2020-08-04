@@ -8,7 +8,7 @@
 t_array append(t_array arr, void* d)
 {
     if (arr.cap == 0) {
-        arr.cap = 2;
+        arr.cap = 128;
         arr.data = malloc(arr.cap*sizeof(void*));
     }
     if (arr.cap == arr.len) {
@@ -31,4 +31,15 @@ t_array new_arr(int len, int cap)
     arr.data = (void**)calloc(cap, sizeof(void*));
     if (arr.data == NULL) exit(ERR_FATAL);
     return arr;
+}
+
+void free_arr(t_array arr, bool free_cont)
+{
+    if (free_cont) {
+        for (int i = 0; i < arr.len; ++i) {
+            free(arr.data[i]);
+        }
+    }
+    free(arr.data);
+
 }

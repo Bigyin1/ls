@@ -7,7 +7,7 @@ int print_file_info(struct stat st, char* file)
 
 }
 
-void print_file(t_args *args, char* file_name)
+bool print_file(t_args *args, char* file_name)
 {
     struct stat st;
 
@@ -18,32 +18,38 @@ void print_file(t_args *args, char* file_name)
         set_exit_code(args, ERR_MINOR);
         if (args->root_args) set_exit_code(args, ERR_FATAL);
         remove_last_path_elem(args);
-        return;
+        return false;
     }
     if (!args->is_long) {
         if (S_ISDIR(st.st_mode) != 0) {
             printf("%s%s%s", KBLU, file_name, KNRM);
             remove_last_path_elem(args);
-            return;
+            return true;
         }
         printf("%s", file_name);
         remove_last_path_elem(args);
-        return;
+        return false;
     }
     remove_last_path_elem(args);
+    return 0;
 }
 
-void print_dir_content(t_args *args)
+t_array print_dir_content(t_args *args, bool filter_dirs)
 {
+    t_array filtered_d = {0};
     for (int i = 0; i < args->files.len; ++i) {
         if (!args->print_all && is_hidden((char*)args->files.data[i])) continue;
-        print_file(args, (char*)args->files.data[i]);
+        if(strlen((char*)args->files.data[i]) == 0) continue;
+        if (print_file(args, (char*)args->files.data[i]) && filter_dirs) {
+            filtered_d = append(filtered_d, strdup((char*)args->files.data[i]));
+        }
         if (!args->is_long && i != args->files.len-1) {
             printf("  ");
             continue;
         }
     }
     if (args->files.len) printf("\n");
+    return filtered_d;
 }
 
 void process_dir(t_args *args)
@@ -62,27 +68,29 @@ void process_dir(t_args *args)
 
     args->files = f_names_arr;
     while ((de = readdir(dir)) != NULL) {
-        args->files = append(args->files, de->d_name);
+        args->files = append(args->files, strdup(de->d_name));
     }
     sort_args(args);
-    print_dir_content(args);
     if (args->recursive) {
-        free(filter_files(args).data);
+        t_array dirs = print_dir_content(args, true);
+        free_arr(args->files, true);
+        args->files = dirs;
         args->root_args = false;
         process_dirs(args);
     } else {
-        free(args->files.data);
+        print_dir_content(args, false);
+        free_arr(args->files, true);
     }
     closedir(dir);
 }
 
 void process_dirs(t_args *args)
 {
-    t_array curr_files = args->files;
+    t_array curr_dirs = args->files;
 
-    for (int i = 0; i < curr_files.len ; ++i) {
-        add_path_elem(args, curr_files.data[i]);
-        if (!is_hidden(curr_files.data[i]) || args->root_args || args->print_all) {
+    for (int i = 0; i < curr_dirs.len ; ++i) {
+        add_path_elem(args, curr_dirs.data[i]);
+        if (!is_hidden(curr_dirs.data[i]) || args->root_args || args->print_all) {
             if (args->prev_files) printf("\n");
             if (args->recursive || args->prev_files) printf("%s:\n", args->curr_path);
             args->prev_files = true;
@@ -90,5 +98,5 @@ void process_dirs(t_args *args)
         }
         remove_last_path_elem(args);
     }
-    free(curr_files.data);
+    free_arr(curr_dirs, true);
 }

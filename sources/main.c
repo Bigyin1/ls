@@ -14,12 +14,12 @@ int main(int argc, char** argv)
     }
     args.root_args = true;
     sort_args(&args);
-    t_array files = filter_files(&args);
+    t_array files = filter_files(&args, true);
     t_array dirs = args.files;
 
     args.files = files;
-    print_dir_content(&args);
-    free(args.files.data);
+    print_dir_content(&args, false);
+    free_arr(args.files, true);
     if (args.files.len) args.prev_files = true;
 
 
