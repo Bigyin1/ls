@@ -10,6 +10,11 @@
 #include <string.h>
 #include <sys/dir.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
+
 
 t_file* new_file(t_ls* args, char* name, bool w_stat)
 {
@@ -37,9 +42,23 @@ u_char get_file_type(t_file* file)
 {
     if (!file->is_stat) return file->type;
 
-    if (S_ISDIR(file->st.st_mode)) return DT_DIR;
-    if (S_ISREG(file->st.st_mode)) return DT_REG;
-    return DT_UNKNOWN;
+    mode_t st_mode = file->st.st_mode;
+    if ((st_mode & S_IFMT) == S_IFBLK)
+        return DT_BLK;
+    else if ((st_mode & S_IFMT) == S_IFCHR)
+        return DT_CHR;
+    else if ((st_mode & S_IFMT) == S_IFDIR)
+        return DT_DIR;
+    else if ((st_mode & S_IFMT) == S_IFIFO)
+        return DT_FIFO;
+    else if ((st_mode & S_IFMT) == S_IFLNK)
+        return DT_LNK;
+    else if ((st_mode & S_IFMT) == S_IFSOCK)
+        return DT_SOCK;
+    else if ((st_mode & S_IFMT) == S_IFREG)
+        return DT_REG;
+    else
+        return DT_UNKNOWN;
 }
 
 bool is_dot(t_file* file)
@@ -52,38 +71,79 @@ bool is_hidden(t_file* file)
     return (strncmp(file->name, ".", 1) == 0 || strncmp(file->name, "..", 2) == 0);
 }
 
-int print_file_info(t_ls *args, t_file* f)
+int count_blocks(t_ls *args, t_array files)
 {
-    add_path_elem(args, f->name);
-    if (!args->is_long) {
-        if (get_file_type(f) == DT_DIR) {
-            printf("%s%s%s", KBLU, f->name, KNRM);
-            remove_last_path_elem(args);
-            return true;
-        }
-        printf("%s", f->name);
-        remove_last_path_elem(args);
-        return false;
+    int res = 0;
+
+    for (int i = 0; i < files.len; ++i) {
+        t_file *f = ((t_file*)files.data[i]);
+        if (is_hidden(f) && !args->print_all) continue;
+        res += f->st.st_blocks/2;
     }
+    return res;
 }
 
-bool print_file(t_ls* args, t_file* f)
+
+/*********************** print files *****************************/
+
+
+
+void print_file_short(t_ls *args, t_file* f)
 {
-    print_file_info(args, f);
-    return 0;
+    if (args->color) {
+        if (get_file_type(f) == DT_DIR) {
+            printf("%s%s%s", KBLU, f->name, KNRM);
+            return;
+        }
+    }
+    printf("%s", f->name);
+}
+
+void print_file_long(t_ls *args, t_file* f) {
+    struct passwd *usr = getpwuid(f->st.st_uid);
+    if (usr == NULL) return;
+    struct group *gr = getgrgid(f->st.st_gid);
+    if (gr == NULL) return;
+    struct tm *time = gmtime(&f->st.st_mtim.tv_sec);
+
+    char t[6] = {0};
+    sprintf(t, "%02d:%02d", time->tm_hour, time->tm_min);
+    printf("%s %d %s %s %10d %s %d %s ", f->perms,
+           (int) f->st.st_nlink,
+           usr->pw_name, gr->gr_name,
+           (int) f->st.st_size,
+           get_month_verbose(time->tm_mon),
+           time->tm_mday, t);
+}
+
+void print_file(t_ls* args, t_file* f) {
+    if (!args->is_long) {
+        print_file_short(args, f);
+        return;
+    }
+    print_file_long(args, f);
+    print_file_short(args, f);
 }
 
 void print_dir_content(t_ls *args, t_array files, bool non_dir)
 {
     int printed = 0;
+    if (args->is_long && !non_dir) {
+        int bl = count_blocks(args, files);
+        if (bl) printf("total %d\n", bl);
+    }
     for (int i = 0; i < files.len; ++i) {
         t_file* f = (t_file*)files.data[i];
         if (non_dir && get_file_type(f) == DT_DIR) continue;
         if (!args->print_all && is_hidden(f)) continue;
         print_file(args, f);
         args->prev_files = true;
-        if (!args->is_long && i != args->files.len-1) {
+        if (!args->is_long && !args->one_col && i != args->files.len-1) {
             printf("  ");
+            continue;
+        }
+        if (i != args->files.len-1) {
+            printf("\n");
             continue;
         }
         ++printed;

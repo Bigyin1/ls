@@ -4,6 +4,7 @@
 
 #include "permission.h"
 #include <stdlib.h>
+#include "errors.h"
 
 
 char get_file_type_char(mode_t st_mode)
@@ -26,12 +27,12 @@ char get_file_type_char(mode_t st_mode)
         return ('?');
 }
 
-char *get_file_permissions(mode_t st_mode, char *filename)
+char *get_file_permissions(mode_t st_mode)
 {
     char *permissions;
 
-    if (!(permissions = calloc(10, 1)))
-        return NULL;
+    if (!(permissions = calloc(11, 1)))
+        exit(ERR_FATAL);
     permissions[0] = get_file_type_char(st_mode);
     permissions[1] = st_mode & S_IRUSR ? 'r' : '-';
     permissions[2] = st_mode & S_IWUSR ? 'w' : '-';
@@ -42,6 +43,7 @@ char *get_file_permissions(mode_t st_mode, char *filename)
     permissions[7] = st_mode & S_IROTH ? 'r' : '-';
     permissions[8] = st_mode & S_IWOTH ? 'w' : '-';
     permissions[9] = st_mode & S_IXOTH ? 'x' : '-';
+    permissions[10] = 0;
     if (st_mode & S_ISUID)
         permissions[3] = (st_mode & S_IXUSR) ? 's' : 'S';
     if (st_mode & S_ISGID)

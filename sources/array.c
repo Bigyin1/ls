@@ -32,6 +32,7 @@ void free_file_arr(t_array arr)
     for (int i = 0; i < arr.len; ++i) {
         t_file * f = (t_file*)arr.data[i];
         free(f->name);
+        free(f->perms);
         free(f);
     }
     free(arr.data);

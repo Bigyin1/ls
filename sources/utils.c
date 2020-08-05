@@ -4,8 +4,9 @@
 
 #include "utils.h"
 #include "file.h"
-#include <string.h>
+#include "list.h"
 #include <stdlib.h>
+#include <string.h>
 
 static int by_time( const void * val1, const void * val2)
 {
@@ -75,8 +76,10 @@ void remove_last_path_elem(t_ls *args)
     if (args->curr_path[p_len-1] == '/') args->curr_path[p_len-1] = 0;
     for (ulong i = p_len-1; i >= 0;) {
         if (args->curr_path[i] == '/') {
-            args->curr_path[i] = 0;
-            if (i == 1 && args->curr_path[0] == '.') args->curr_path[0] = 0;
+            if (i == 1 && args->curr_path[0] == '.') {
+                args->curr_path[i] = 0;
+                args->curr_path[0] = 0;
+            }
             break;
         }
         args->curr_path[i] = 0;
@@ -85,6 +88,24 @@ void remove_last_path_elem(t_ls *args)
     }
 }
 
+char* get_month_verbose(int md)
+{
+    switch (md) {
+        case 0: return "jan";
+        case 1: return "feb";
+        case 2: return "mar";
+        case 3: return "apr";
+        case 4: return "may";
+        case 5: return "jun";
+        case 6: return "jul";
+        case 7: return "aug";
+        case 8: return "sep";
+        case 9: return "oct";
+        case 10: return "nov";
+        case 11: return "dec";
+        default: return "---";
+    }
+}
 
 void set_exit_code(t_ls *args, int ecode)
 {

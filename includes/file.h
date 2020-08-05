@@ -6,14 +6,15 @@
 #define LS_FILE_H
 
 #include "array.h"
-#include "parse_args.h"
+#include "list.h"
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 typedef struct s_file {
-    char* name;
     struct stat st;
+    char* name;
+    char* perms;
     u_char type;
     bool is_stat;
 } t_file;

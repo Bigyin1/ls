@@ -1,11 +1,11 @@
 #include "list.h"
 #include "array.h"
-#include "parse_args.h"
 #include <stdio.h>
 #include "utils.h"
 #include "errors.h"
 #include "file.h"
 #include <sys/dir.h>
+#include "permission.h"
 
 
 void print_access_err(t_ls *args)
@@ -30,6 +30,7 @@ void process_dir(t_ls *args)
         t_file* file = new_file(args, de->d_name, args->is_long || args->sort_by_time || (de->d_type == DT_UNKNOWN));
         if (file == NULL) continue;
         file->type = de->d_type;
+        if (args->is_long) file->perms = get_file_permissions(file->st.st_mode);
         next_files = append(next_files, file);
     }
     closedir(dir);

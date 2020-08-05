@@ -7,7 +7,7 @@ set(CMAKE_C_STANDARD 11)
 add_executable(ls sources/main.c
         sources/parse_args.c
         sources/list.c sources/array.c
-        sources/utils.c sources/permission.c sources/formatting.c sources/file.c)
+        sources/utils.c sources/permission.c sources/file.c)
 include_directories(includes)
 #target_compile_options(ls PRIVATE -O3)
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
