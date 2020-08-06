@@ -8,7 +8,6 @@
 int main(int argc, char** argv)
 {
     t_ls args = {0};
-
     args.root_args = true;
     if (parse_args(&args, argc-1, argv+1) != NO_ERR) exit(ERR_FATAL);
     sort_files(&args);

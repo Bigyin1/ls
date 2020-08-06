@@ -1,7 +1,3 @@
-//
-// Created by sergey on 04.08.2020.
-//
-
 #include "permission.h"
 #include <stdlib.h>
 #include "errors.h"
@@ -9,8 +5,8 @@
 
 char get_file_type_char(mode_t st_mode)
 {
-    if ((st_mode & S_IFMT) == S_IFBLK)
-        return ('b');
+    if ((st_mode & S_IFMT) == S_IFREG)
+        return ('-');
     else if ((st_mode & S_IFMT) == S_IFCHR)
         return ('c');
     else if ((st_mode & S_IFMT) == S_IFDIR)
@@ -21,8 +17,8 @@ char get_file_type_char(mode_t st_mode)
         return ('l');
     else if ((st_mode & S_IFMT) == S_IFSOCK)
         return ('s');
-    else if ((st_mode & S_IFMT) == S_IFREG)
-        return ('-');
+    else if ((st_mode & S_IFMT) == S_IFBLK)
+        return ('b');
     else
         return ('?');
 }

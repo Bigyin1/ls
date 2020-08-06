@@ -90,7 +90,7 @@ int count_blocks(t_ls *args, t_array files)
 // doesn't return color for symlink
 char* get_file_color(t_file *f, t_ls *args)
 {
-    if (!args->color) return KNRM;
+    if (!args->color) return "";
 
     u_char ft = get_file_type(f);
     if (ft == DT_DIR) return KBLU;
@@ -104,12 +104,13 @@ void print_symlink_content(t_ls *args, t_file* f, bool corr)
 
     printf(" -> ");
     char* txtcolor = corr ? get_file_color(f, args) : KRED;
+    char *stop_color = args->color ? KNRM : "";
     if (args->color){
         printf("%s", txtcolor);
         if (!corr) printf("%s", BACKWHITE);
     }
 
-    printf("%s\x1B[0m", buf);
+    printf("%s%s", buf, stop_color);
 }
 
 void print_symlink(t_ls *args, t_file* f)
@@ -120,12 +121,13 @@ void print_symlink(t_ls *args, t_file* f)
     }
 
     char *txtcolor = corr ? KCYN : KRED;
+    char *stop_color = args->color ? KNRM : "";
     if (args->color){
         printf("%s", txtcolor);
         if (!corr) printf("%s", BACKWHITE);
     }
 
-    printf("%s\x1B[0m", f->name);
+    printf("%s%s", f->name, stop_color);
     if (args->is_long) {
         print_symlink_content(args, f, corr);
     }
@@ -137,7 +139,8 @@ void print_filename(t_ls *args, t_file* f)
         print_symlink(args, f);
         return;
     }
-    printf("%s%s%s", get_file_color(f, args), f->name, KNRM);
+    char *stop_color = args->color ? KNRM : "";
+    printf("%s%s%s", get_file_color(f, args), f->name, stop_color);
 }
 
 void print_file_meta(t_ls *args, t_file* f) {
