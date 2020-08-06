@@ -22,13 +22,11 @@ typedef struct s_file {
     struct stat st;
     char* name;
     char* perms;
-    u_char type;
-    u_char ln_type;
+    uint type;
 } t_file;
 
 void print_dir_content(t_ls *args, t_array files, bool non_dir);
 t_file* new_file(t_ls* args, char* name, bool w_stat);
-u_char get_file_type(t_file* file);
 bool is_hidden(t_file* file);
 bool is_dot(t_file* file);
 

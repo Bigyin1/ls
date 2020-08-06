@@ -1,16 +1,10 @@
-//
-// Created by sergey on 04.08.2020.
-//
-
 #include "file.h"
 #include "utils.h"
 #include <stdlib.h>
 #include "errors.h"
 #include "list.h"
 #include <string.h>
-#include <sys/dir.h>
 #include <stdio.h>
-#include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
@@ -32,34 +26,11 @@ t_file* new_file(t_ls* args, char* name, bool w_stat)
         }
         remove_last_path_elem(args);
         f->st = st;
+        f->type = f->st.st_mode & S_IFMT;
     }
     f->name = strdup(name);
     if (f->name == NULL) exit(ERR_FATAL);
     return f;
-}
-
-u_char get_file_type(t_file* file)
-{
-    if (file->type) return file->type;
-
-    mode_t st_mode = file->st.st_mode;
-    if ((st_mode & S_IFMT) == S_IFBLK)
-        file->type = DT_BLK;
-    else if ((st_mode & S_IFMT) == S_IFCHR)
-        file->type = DT_CHR;
-    else if ((st_mode & S_IFMT) == S_IFDIR)
-        file->type = DT_DIR;
-    else if ((st_mode & S_IFMT) == S_IFIFO)
-        file->type = DT_FIFO;
-    else if ((st_mode & S_IFMT) == S_IFLNK)
-        file->type = DT_LNK;
-    else if ((st_mode & S_IFMT) == S_IFSOCK)
-        file->type = DT_SOCK;
-    else if ((st_mode & S_IFMT) == S_IFREG)
-        file->type = DT_REG;
-    else
-        file->type = DT_UNKNOWN;
-    return file->type;
 }
 
 bool is_dot(t_file* file)
@@ -92,50 +63,46 @@ char* get_file_color(t_file *f, t_ls *args)
 {
     if (!args->color) return "";
 
-    u_char ft = get_file_type(f);
-    if (ft == DT_DIR) return KBLU;
+    if (f->type == S_IFDIR) return KBLU;
     return KNRM;
 }
 
-void print_symlink_content(t_ls *args, t_file* f, bool corr)
+void print_symlink_content(t_ls *args, t_file* f, bool valid)
 {
     char buf[PATH_MAX] = {0};
     if (!readlink(args->curr_path, buf, PATH_MAX)) return;
 
     printf(" -> ");
-    char* txtcolor = corr ? get_file_color(f, args) : KRED;
-    char *stop_color = args->color ? KNRM : "";
     if (args->color){
-        printf("%s", txtcolor);
-        if (!corr) printf("%s", BACKWHITE);
+        printf("%s", valid ? get_file_color(f, args) : KRED);
+        if (!valid) printf("%s", BACKWHITE);
     }
 
-    printf("%s%s", buf, stop_color);
+    printf("%s%s", buf, args->color ? KNRM : "");
 }
 
 void print_symlink(t_ls *args, t_file* f)
 {
-    bool corr = true;
+    bool valid = true;
     if (stat(args->curr_path, &f->st) != 0){
-        corr = false;
+        valid = false;
+        f->type = f->st.st_mode&S_IFMT;
     }
 
-    char *txtcolor = corr ? KCYN : KRED;
-    char *stop_color = args->color ? KNRM : "";
     if (args->color){
-        printf("%s", txtcolor);
-        if (!corr) printf("%s", BACKWHITE);
+        printf("%s", valid ? KCYN : KRED);
+        if (!valid) printf("%s", BACKWHITE);
     }
 
-    printf("%s%s", f->name, stop_color);
+    printf("%s%s", f->name, args->color ? KNRM : "");
     if (args->is_long) {
-        print_symlink_content(args, f, corr);
+        print_symlink_content(args, f, valid);
     }
 }
 
 void print_filename(t_ls *args, t_file* f)
 {
-    if (get_file_type(f) == DT_LNK){
+    if (f->type == S_IFLNK){
         print_symlink(args, f);
         return;
     }
@@ -171,7 +138,7 @@ void print_file(t_ls* args, t_file* f) {
 
 void print_dir_content(t_ls *args, t_array files, bool non_dir)
 {
-    int printed = 0;
+    int     printed = 0;
     t_file* f;
 
     if (args->is_long && !non_dir) {
@@ -180,7 +147,7 @@ void print_dir_content(t_ls *args, t_array files, bool non_dir)
     }
     for (int i = 0; i < files.len; ++i) {
         f = (t_file*)files.data[i];
-        if (non_dir && get_file_type(f) == DT_DIR) continue;
+        if (non_dir && f->type == S_IFDIR) continue;
         if (!args->print_all && is_hidden(f)) continue;
 
         print_file(args, f);

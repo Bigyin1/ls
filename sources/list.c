@@ -27,9 +27,8 @@ void process_dir(t_ls *args)
         return;
     }
     while ((de = readdir(dir)) != NULL) {
-        t_file* file = new_file(args, de->d_name, args->is_long || args->sort_by_time || (de->d_type == DT_UNKNOWN));
+        t_file* file = new_file(args, de->d_name, true);
         if (file == NULL) continue;
-        file->type = de->d_type;
         if (args->is_long) file->perms = get_file_permissions(file->st.st_mode);
         next_files = append(next_files, file);
     }
@@ -53,7 +52,7 @@ void process_dirs(t_ls *args)
 
     for (int i = 0; i < curr_dirs.len ; ++i) {
         f = curr_dirs.data[i];
-        if (get_file_type(f) != DT_DIR) continue;
+        if (f->type != S_IFDIR) continue;
         if (is_dot(f) && !args->root_args) continue;
 
         add_path_elem(args, f->name);
