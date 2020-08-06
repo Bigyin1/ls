@@ -48,12 +48,14 @@ void process_dir(t_ls *args)
 
 void process_dirs(t_ls *args)
 {
+    t_file *f;
     t_array curr_dirs = args->files;
 
     for (int i = 0; i < curr_dirs.len ; ++i) {
-        t_file *f = curr_dirs.data[i];
+        f = curr_dirs.data[i];
         if (get_file_type(f) != DT_DIR) continue;
         if (is_dot(f) && !args->root_args) continue;
+
         add_path_elem(args, f->name);
         if (!is_hidden(f) || args->root_args || args->print_all) {
             if (args->prev_files) printf("\n");
