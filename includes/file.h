@@ -25,7 +25,7 @@ typedef struct s_file {
     uint type;
 } t_file;
 
-void print_dir_content(t_ls *args, t_array files, bool non_dir);
+void print_dir_content(t_ls *args, t_array files, bool files_only);
 t_file *new_file(t_ls *args, char *name, bool w_stat);
 bool is_hidden(t_file *file);
 bool is_dot(t_file *file);

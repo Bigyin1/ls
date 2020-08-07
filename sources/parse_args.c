@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <utils.h>
 
 char *usage = "Usage: ft_ls [OPTION]... [FILE]...\n"
               "List information about the FILES (the current directory by default).\n"
@@ -19,7 +20,9 @@ char *usage = "Usage: ft_ls [OPTION]... [FILE]...\n"
               "--help               display this help and exit\n";
 
 static int parse_file_arg(t_ls *ls_a, char *argv) {
+    add_path_elem(ls_a, argv);
     t_file *f = new_file(ls_a, argv, true);
+    remove_all_path(ls_a);
     if (f == NULL) return 0;
     if (ls_a->is_long) f->perms = get_file_permissions(f->st.st_mode);
     ls_a->files = append(ls_a->files, f);
@@ -108,7 +111,7 @@ static int check_stdout(t_ls *ls_a) {
     return NO_ERR;
 }
 
-int parse_args(t_ls *ls_a, int argc, char **argv) {
+int parse_args(t_ls *ls_a, char **argv) {
     int err;
 
     ls_a->color = true;
@@ -120,7 +123,9 @@ int parse_args(t_ls *ls_a, int argc, char **argv) {
         }
     }
     if (ls_a->files.len == 0 && ls_a->exit_code == NO_ERR) {
+        add_path_elem(ls_a, ".");
         t_file *f = new_file(ls_a, ".", true);
+        remove_all_path(ls_a);
         if (f == NULL) return ERR_FATAL;
         ls_a->files = append(ls_a->files, f);
     }

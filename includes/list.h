@@ -15,7 +15,7 @@ typedef struct s_ls {
     // file list
     t_array files;
 
-    bool prev_files;
+    bool printed_line;
     bool root_args;
 
     char curr_path[PATH_MAX];
@@ -33,7 +33,7 @@ typedef struct s_ls {
 } t_ls;
 
 
-void process_dirs(t_ls *args);
+void process_dirs(t_ls *args, bool root);
 void print_access_err(t_ls *args);
 
 

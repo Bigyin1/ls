@@ -6,6 +6,6 @@
 #include <limits.h>
 #include <stdbool.h>
 
-int parse_args(t_ls *ls_a, int args, char **argv);
+int parse_args(t_ls *ls_a, char **argv);
 
 #endif//LS_LS_H

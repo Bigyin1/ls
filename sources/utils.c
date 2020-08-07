@@ -56,6 +56,12 @@ void add_path_elem(t_ls *args, char *file) {
     strcat(args->curr_path, file);
 }
 
+void remove_all_path(t_ls *args) {
+    for (int i = 0; args->curr_path[i]; ++i) {
+        args->curr_path[i] = 0;
+    }
+}
+
 void remove_last_path_elem(t_ls *args) {
     unsigned long p_len;
 

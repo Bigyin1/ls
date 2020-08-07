@@ -16,14 +16,11 @@ t_file *new_file(t_ls *args, char *name, bool w_stat) {
     if (f == NULL) exit(ERR_FATAL);
     if (w_stat) {
         struct stat st;
-        add_path_elem(args, name);
         if (lstat(args->curr_path, &st) != 0) {
             print_access_err(args);
-            remove_last_path_elem(args);
             free(f);
             return NULL;
         }
-        remove_last_path_elem(args);
         f->st = st;
         f->type = f->st.st_mode & S_IFMT;
     }
@@ -33,10 +30,14 @@ t_file *new_file(t_ls *args, char *name, bool w_stat) {
 }
 
 bool is_dot(t_file *file) {
+    if (strlen(file->name) > 2) return false;
     return (strcmp(file->name, ".") == 0 || strcmp(file->name, "..") == 0);
 }
 
 bool is_hidden(t_file *file) {
+    int ln = strlen(file->name);
+    if (ln >= 2 && file->name[1] == '/') return false;
+    if (ln >= 3 && file->name[2] == '/') return false;
     return (strncmp(file->name, ".", 1) == 0 || strncmp(file->name, "..", 2) == 0);
 }
 
@@ -128,30 +129,25 @@ void print_file(t_ls *args, t_file *f) {
     remove_last_path_elem(args);
 }
 
-void print_dir_content(t_ls *args, t_array files, bool non_dir) {
+void print_dir_content(t_ls *args, t_array files, bool files_only) {
     int printed = 0;
     t_file *f;
 
-    if (args->is_long && !non_dir) {
+    if (args->is_long && !files_only) {
         int bl = count_blocks(args, files);
         if (bl) printf("total %d\n", bl);
     }
     for (int i = 0; i < files.len; ++i) {
         f = (t_file *) files.data[i];
-        if (non_dir && f->type == S_IFDIR) continue;
         if (!args->print_all && is_hidden(f)) continue;
 
+        if (!args->is_long && !args->one_col && printed && i != 0) printf("  ");
+        else if (printed != 0) printf("\n");
+
         print_file(args, f);
-        args->prev_files = true;
-        if (!args->is_long && !args->one_col && i != args->files.len - 1) {
-            printf("  ");
-            continue;
-        }
-        if (i != args->files.len - 1) {
-            printf("\n");
-            continue;
-        }
+
         ++printed;
+        args->printed_line = true;
     }
     if (printed) printf("\n");
 }
