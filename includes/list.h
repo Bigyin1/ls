@@ -29,12 +29,12 @@ typedef struct s_ls {
     bool one_col;
     bool color;
 
-    int exitCode;
-}   t_ls;
+    int exit_code;
+} t_ls;
 
 
 void process_dirs(t_ls *args);
 void print_access_err(t_ls *args);
 
 
-#endif //LS_LIST_H
+#endif//LS_LIST_H

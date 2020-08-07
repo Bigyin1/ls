@@ -10,4 +10,4 @@
 #define ERR_FATAL 2
 
 
-#endif //LS_ERRORS_H
+#endif//LS_ERRORS_H

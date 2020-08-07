@@ -2,10 +2,10 @@
 #define LS_LS_H
 
 #include "array.h"
-#include <stdbool.h>
-#include <limits.h>
 #include "list.h"
+#include <limits.h>
+#include <stdbool.h>
 
-int parse_args(t_ls *ls_a, int args, char** argv);
+int parse_args(t_ls *ls_a, int args, char **argv);
 
-#endif //LS_LS_H
+#endif//LS_LS_H

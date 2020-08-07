@@ -1,10 +1,9 @@
 #include "permission.h"
-#include <stdlib.h>
 #include "errors.h"
+#include <stdlib.h>
 
 
-char get_file_type_char(mode_t st_mode)
-{
+char get_file_type_char(mode_t st_mode) {
     if ((st_mode & S_IFMT) == S_IFREG)
         return ('-');
     else if ((st_mode & S_IFMT) == S_IFCHR)
@@ -23,8 +22,7 @@ char get_file_type_char(mode_t st_mode)
         return ('?');
 }
 
-char *get_file_permissions(mode_t st_mode)
-{
+char *get_file_permissions(mode_t st_mode) {
     char *permissions;
 
     if (!(permissions = calloc(11, 1)))

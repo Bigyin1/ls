@@ -10,4 +10,4 @@
 char get_file_type_char(mode_t st_mode);
 char *get_file_permissions(mode_t st_mode);
 
-#endif //LS_PERMISSION_H
+#endif//LS_PERMISSION_H

@@ -1,24 +1,22 @@
 #include "list.h"
 #include "array.h"
-#include <stdio.h>
-#include "utils.h"
 #include "errors.h"
 #include "file.h"
-#include <sys/dir.h>
 #include "permission.h"
+#include "utils.h"
+#include <stdio.h>
+#include <sys/dir.h>
 
 
-void print_access_err(t_ls *args)
-{
-    fprintf(stderr,"ls: can't access '%s': ", args->curr_path);
+void print_access_err(t_ls *args) {
+    fprintf(stderr, "ls: can't access '%s': ", args->curr_path);
     perror("");
     set_exit_code(args, ERR_MINOR);
     if (args->root_args) set_exit_code(args, ERR_FATAL);
 }
 
-void process_dir(t_ls *args)
-{
-    DIR* dir;
+void process_dir(t_ls *args) {
+    DIR *dir;
     struct dirent *de;
     t_array next_files = {0};
 
@@ -27,7 +25,7 @@ void process_dir(t_ls *args)
         return;
     }
     while ((de = readdir(dir)) != NULL) {
-        t_file* file = new_file(args, de->d_name, true);
+        t_file *file = new_file(args, de->d_name, true);
         if (file == NULL) continue;
         if (args->is_long) file->perms = get_file_permissions(file->st.st_mode);
         next_files = append(next_files, file);
@@ -45,12 +43,11 @@ void process_dir(t_ls *args)
     free_file_arr(args->files);
 }
 
-void process_dirs(t_ls *args)
-{
+void process_dirs(t_ls *args) {
     t_file *f;
     t_array curr_dirs = args->files;
 
-    for (int i = 0; i < curr_dirs.len ; ++i) {
+    for (int i = 0; i < curr_dirs.len; ++i) {
         f = curr_dirs.data[i];
         if (f->type != S_IFDIR) continue;
         if (is_dot(f) && !args->root_args) continue;

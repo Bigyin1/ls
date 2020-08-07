@@ -8,13 +8,12 @@
 
 #include <stddef.h>
 
-typedef struct s_array
-{
+typedef struct s_array {
     void **data;
     size_t cap, len;
 } t_array;
 
-t_array append(t_array arr, void* d);
+t_array append(t_array arr, void *d);
 void free_file_arr(t_array arr);
 
-#endif //LS_ARRAY_H
+#endif//LS_ARRAY_H
