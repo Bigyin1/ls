@@ -38,7 +38,8 @@ void process_dir(t_ls *args) {
     args->files = next_files;
     sort_files(args);
 
-    print_dir_content(args, args->files, false);
+    print_blocks(args, args->files);
+    print_dir_content(args, args->files);
     if (args->recursive) {
         process_dirs(args, false);
         return;
@@ -80,7 +81,7 @@ void list(t_ls *args, char **files) {
     t_array d = filter_dirs(args->files);
     free(args->files.data);
 
-    print_dir_content(args, f, true);
+    print_dir_content(args, f);
     remove_all_path(args);
     free_file_arr(f);
 

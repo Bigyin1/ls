@@ -44,15 +44,18 @@ bool is_hidden(t_file *file) {
 /*********************** print files *****************************/
 
 
-int count_blocks(t_ls *args, t_array files) {
-    int res = 0;
+void print_blocks(t_ls *args, t_array files) {
+    int bl = 0;
+
+    if (!args->is_long) return ;
 
     for (int i = 0; i < files.len; ++i) {
         t_file *f = ((t_file *) files.data[i]);
         if (is_hidden(f) && !args->print_all) continue;
-        res += f->st.st_blocks / 2;
+        bl += f->st.st_blocks / 2;
     }
-    return res;
+
+    if (bl) printf("total %d\n", bl);
 }
 
 // doesn't return color for symlink
@@ -129,14 +132,10 @@ void print_file(t_ls *args, t_file *f) {
     remove_last_path_elem(args);
 }
 
-void print_dir_content(t_ls *args, t_array files, bool files_only) {
+void print_dir_content(t_ls *args, t_array files) {
     int printed = 0;
     t_file *f;
 
-    if (args->is_long && !files_only) {
-        int bl = count_blocks(args, files);
-        if (bl) printf("total %d\n", bl);
-    }
     for (int i = 0; i < files.len; ++i) {
         f = (t_file *) files.data[i];
         if (!args->print_all && is_hidden(f)) continue;
