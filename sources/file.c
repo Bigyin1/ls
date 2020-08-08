@@ -108,7 +108,7 @@ void print_file_meta(t_ls *args, t_file *f) {
     if (usr == NULL) return;
     struct group *gr = getgrgid(f->st.st_gid);
     if (gr == NULL) return;
-    struct tm *time = gmtime(&f->st.st_mtim.tv_sec);
+    struct tm *time = localtime(&f->st.st_mtim.tv_sec);
 
     char t[6] = {0};
     sprintf(t, "%02d:%02d", time->tm_hour, time->tm_min);

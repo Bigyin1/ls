@@ -23,19 +23,20 @@ static int by_name(const void *val1, const void *val2) {
     t_file *f1 = *(t_file **) val1;
     t_file *f2 = *(t_file **) val2;
 
-    return strcasecmp(f1->name, f2->name);
+    return strcmp(f1->name, f2->name);
 }
 
 static int by_name_r(const void *val1, const void *val2) {
     t_file *f1 = *(t_file **) val1;
     t_file *f2 = *(t_file **) val2;
 
-    return strcasecmp(f2->name, f1->name);
+    return strcmp(f2->name, f1->name);
 }
 
 void sort_files(t_ls *args) {
     if (args->sort_by_time) {
-        args->reverse ? qsort(args->files.data, args->files.len, sizeof(void *), by_time_r) : qsort(args->files.data, args->files.len, sizeof(void *), by_time);
+        args->reverse ? qsort(args->files.data, args->files.len, sizeof(void *), by_time_r)
+                      : qsort(args->files.data, args->files.len, sizeof(void *), by_time);
         return;
     }
     if (args->reverse) {
