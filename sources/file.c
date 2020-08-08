@@ -141,8 +141,9 @@ void print_dir_content(t_ls *args, t_array files, bool files_only) {
         f = (t_file *) files.data[i];
         if (!args->print_all && is_hidden(f)) continue;
 
-        if (!args->is_long && !args->one_col && printed && i != 0) printf("  ");
-        else if (printed != 0) printf("\n");
+        if (!args->is_long && !args->one_col && printed) printf("  ");
+        else if (printed)
+            printf("\n");
 
         print_file(args, f);
 

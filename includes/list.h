@@ -33,6 +33,7 @@ typedef struct s_ls {
 } t_ls;
 
 
+void list(t_ls *args, char **files);
 void process_dirs(t_ls *args, bool root);
 void print_access_err(t_ls *args);
 

@@ -4,7 +4,9 @@
 #include "file.h"
 #include "permission.h"
 #include "utils.h"
+#include <parse_args.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/dir.h>
 
 
@@ -67,4 +69,21 @@ void process_dirs(t_ls *args, bool root) {
         remove_last_path_elem(args);
     }
     free_file_arr(curr_dirs);
+}
+
+void list(t_ls *args, char **files) {
+    args->root_args = true;
+    if (parse_args(args, files) != NO_ERR) return;
+    sort_files(args);
+
+    t_array f = filter_files(args->files);
+    t_array d = filter_dirs(args->files);
+    free(args->files.data);
+
+    print_dir_content(args, f, true);
+    remove_all_path(args);
+    free_file_arr(f);
+
+    args->files = d;
+    process_dirs(args, true);
 }
