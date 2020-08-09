@@ -4,19 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 static int by_time(const void *val1, const void *val2) {
     t_file *f1 = *(t_file **) val1;
     t_file *f2 = *(t_file **) val2;
 
-    return (int) (f1->st.st_mtim.tv_nsec - f2->st.st_mtim.tv_nsec);
+    return (int) (f1->st.mtime.tv_nsec - f2->st.mtime.tv_nsec);
 }
 
 static int by_time_r(const void *val1, const void *val2) {
     t_file *f1 = *(t_file **) val1;
     t_file *f2 = *(t_file **) val2;
 
-
-    return (int) (f2->st.st_mtim.tv_nsec - f1->st.st_mtim.tv_nsec);
+    return (int) (f2->st.mtime.tv_nsec - f1->st.mtime.tv_nsec);
 }
 
 static int by_name(const void *val1, const void *val2) {
@@ -64,12 +64,12 @@ void remove_all_path(t_ls *args) {
 }
 
 void remove_last_path_elem(t_ls *args) {
-    unsigned long p_len;
+    size_t p_len;
 
     p_len = strlen(args->curr_path);
     if (p_len == 0) return;
     if (args->curr_path[p_len - 1] == '/') args->curr_path[p_len - 1] = 0;
-    for (ulong i = p_len - 1; i >= 0;) {
+    for (size_t i = p_len - 1; i >= 0;) {
         if (args->curr_path[i] == '/') {
             if (i == 1 && args->curr_path[0] == '.') {
                 args->curr_path[i] = 0;

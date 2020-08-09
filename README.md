@@ -10,4 +10,4 @@ mkdir build && cd build
 cmake ..
 ./ls {optional argument}
 ```
-Tested on Ubuntu 20.04
+Tested on Ubuntu 20.04 and MacOS Catalina

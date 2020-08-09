@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 
@@ -28,7 +27,7 @@ void restore_stdout() {
 
 void test_parse_args() {
     t_ls ls = {0};
-    char *argv[] = {"-laR", "-r", "-1", "./test", NULL};
+    char *argv[] = {"-laR", "-r", "-1", "./test_dir", NULL};
     parse_args(&ls, argv);
 
     assert(ls.files.len == 1);

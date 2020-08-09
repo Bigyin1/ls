@@ -10,6 +10,12 @@
 #include <limits.h>
 #include <stdbool.h>
 
+#if defined(__APPLE__)
+    #define mtime st_mtimespec
+#else
+    #define mtime st_mtim
+#endif
+
 
 typedef struct s_ls {
     // file list
